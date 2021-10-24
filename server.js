@@ -1,9 +1,10 @@
 const app = require("./app");
 const debug = require("debug");
-const http = require("http");
-const chance = require("chance").Chance()
+const https = require("https");
+const fs = require("fs");
+const chance = require("chance").Chance();
 
-process.env.JWT_KEY = chance.string({length: 64})
+process.env.JWT_KEY = chance.string({ length: 64 });
 console.log(`JWT KEY: ${process.env.JWT_KEY}`);
 
 const normalizePort = (val) => {
@@ -50,7 +51,12 @@ const onListening = () => {
 const port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);
 
-const server = http.createServer(app);
+var options = {
+  key: fs.readFileSync("/home/admmsk/cert/privkey.pem"),
+  cert: fs.readFileSync("/home/admmsk/cert/cert.pem"),
+};
+
+const server = https.createServer(options, app);
 server.on("error", onError);
 server.on("listening", onListening);
 server.listen(port);
